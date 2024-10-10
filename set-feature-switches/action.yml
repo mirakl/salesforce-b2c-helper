@@ -25,14 +25,14 @@ runs:
         java-version: 21
 
     - name: Install playwright dependencies
-      working-directory: playwright_tools
+      working-directory:  ../playwright_tools
       run: |
         sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
         sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chrome"
       shell: bash
 
     - name: Run Maven tests
-      working-directory: playwright_tools
+      working-directory: ../playwright_tools
       run: |
         mvn clean test \
           -e -X \
