@@ -1,4 +1,4 @@
-Copyright (c) 2021, Mirakl SAS.
+Copyright (c) 2024, Mirakl SAS.
 All rights reserved.
 Rights to use, copy, modify, publish, distribute, in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer and shall be free.
