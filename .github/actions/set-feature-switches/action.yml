@@ -1,0 +1,43 @@
+name: "Set Salesforce B2C feature switches"
+description: "Set Salesforce B2C feature switches"
+inputs:
+  SFCC_AUTOMATED_TESTS_USERNAME:
+    description: "SFCC Automated Tests Username"
+    required: true
+  SFCC_AUTOMATED_TESTS_PASSWORD:
+    description: "SFCC Automated Tests Password"
+    required: true
+  SFCC_AUTOMATED_TESTS_SECRET_KEY:
+    description: "SFCC Automated Tests Secret Key"
+    required: true
+  SFCC_BASE_URL:
+    description: "SFCC Base URL"
+    required: true
+
+runs:
+  using: composite
+  steps:
+
+    - name: Setup-java
+      uses: actions/setup-java@v4
+      with:
+        distribution: zulu
+        java-version: 21
+
+    - name: Install playwright dependencies
+      working-directory: playwright_tools
+      run: |
+        sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
+        sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chrome"
+      shell: bash
+
+    - name: Run Maven tests
+      working-directory: playwright_tools
+      run: |
+        mvn clean test \
+          -e -X \
+          -DSFCC_AUTOMATED_TESTS_USERNAME=${{ inputs.SFCC_AUTOMATED_TESTS_USERNAME }} \
+          -DSFCC_AUTOMATED_TESTS_PASSWORD=${{ inputs.SFCC_AUTOMATED_TESTS_PASSWORD }} \
+          -DSFCC_AUTOMATED_TESTS_SECRET_KEY=${{ inputs.SFCC_AUTOMATED_TESTS_SECRET_KEY }} \
+          -DSFCC_BASE_URL=${{ inputs.SFCC_BASE_URL }}
+      shell: bash
