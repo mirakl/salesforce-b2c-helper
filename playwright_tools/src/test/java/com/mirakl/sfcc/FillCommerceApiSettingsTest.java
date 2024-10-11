@@ -35,39 +35,57 @@ class FillCommerceApiSettingsTest extends PlaywrightBase {
             try {
                 // Login
                 Thread.sleep(TWO_SECONDS);
+                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminLoginPage.setUsername(SFCC_AUTOMATED_TESTS_USERNAME);
+                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminLoginPage.clickSkipForNowButton();
                 Thread.sleep(TWO_SECONDS);
+                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminLoginPage.setPassword(SFCC_AUTOMATED_TESTS_PASSWORD);
+                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminLoginPage.clickSkipForNowButton();
                 Thread.sleep(TWO_SECONDS);
+                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminVerifyPage.fillAuthenticatorForm(SFCC_AUTOMATED_TESTS_SECRET_KEY);
+                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminVerifyPage.clickSkipForNowButton();
 
                 // Feature Switches
                 Thread.sleep(TEN_SECONDS);
+                takeScreenshot(sfccAdminLoginPage);
                 sfccNavigationPage.clickSkipForNowButton();
+                takeScreenshot(sfccAdminLoginPage);
                 sfccNavigationPage.clickAdministrationSubMenus();
+                takeScreenshot(sfccAdminLoginPage);
                 try {
                     sfccNavigationPage.clickViewFeatureSwitchPrefsSubMenus();
                 } catch (Exception e) {
                     sfccNavigationPage.clickSkipForNowButton();
+                    takeScreenshot(sfccAdminLoginPage);
                     sfccNavigationPage.clickAdministrationSubMenus();
+                    takeScreenshot(sfccAdminLoginPage);
                     sfccNavigationPage.clickViewFeatureSwitchPrefsSubMenus();
                 }
                 Thread.sleep(TWO_SECONDS);
+                takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.clickSkipForNowButton();
+                takeScreenshot(sfccAdminLoginPage);
                 Thread.sleep(TWO_SECONDS);
+                takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.enableScapiHookExecutionFlag();
                 Thread.sleep(TWO_SECONDS);
+                takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.clickSkipForNowButton();
+                takeScreenshot(sfccAdminLoginPage);
                 Thread.sleep(TWO_SECONDS);
+                takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.clickApplyButton();
                 return;
             } catch (Exception e) {
                 logger.error("Error while filling Commerce API settings", e);
                 currentError++;
             }
+            takeScreenshot(sfccAdminLoginPage);
         } while (currentError < maxError);
     }
 
