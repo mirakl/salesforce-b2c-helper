@@ -2,8 +2,12 @@ package com.mirakl.sfcc;
 
 import com.microsoft.playwright.*;
 import org.junit.jupiter.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -12,6 +16,7 @@ import static com.microsoft.playwright.Playwright.create;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PlaywrightBase {
 
+    private static final Logger logger = LoggerFactory.getLogger(PlaywrightBase.class);
     protected static final long TWO_SECONDS = TimeUnit.SECONDS.toMillis(2);
     protected static final long TEN_SECONDS = TimeUnit.SECONDS.toMillis(10);
     protected static final List<String> BROWSER_DEFAULT_ARGS = List.of("--start-maximized", "--start-fullscreen", "--incognito", "--disable-save-password-bubble");
@@ -43,6 +48,12 @@ public class PlaywrightBase {
     protected static void clickSkipForNowBtn(Page page) {
         page.keyboard().press("Escape");
         page.keyboard().press("Tab");
+    }
+
+    protected static void takeScreenshot(BasePage basePage){
+        byte[] buffer = basePage.getPage().screenshot();
+        logger.info("Screenshot taken from the page" , Arrays.stream(Thread.currentThread().getStackTrace()).map(StackTraceElement::toString).toArray());
+        logger.info(Base64.getEncoder().encodeToString(buffer));
     }
 
     @BeforeAll
