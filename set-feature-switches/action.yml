@@ -28,7 +28,7 @@ runs:
       working-directory:  ${{ github.action_path }}/../playwright_tools
       run: |
         sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
-        sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install chrome"
+        sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --force chrome"
       shell: bash
 
     - name: Run Maven tests
