@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- be careful when editing this file as IntelliJ will format the following line and add line feeds which will mess the log format -->
+            <pattern>${CONSOLE_LOG_PATTERN:-%white(%d{HH:mm:ss.SSS}) %highlight(%-5level) %magenta(%logger{36}.%M [L.%L] -) %highlight(%msg%n)}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <springProfile name="file-logging">
+        <!-- File appender configuration -->
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <!-- Specify the active log file -->
+            <file>${HOME}/shopify/logs/app.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <!-- Daily rollover -->
+                <fileNamePattern>${HOME}/shopify/logs/app.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <!-- Retain logs for 7 days -->
+                <maxHistory>7</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${CONSOLE_LOG_PATTERN:-%white(%d{HH:mm:ss.SSS}) %highlight(%-5level) %magenta(%logger{36}.%M [L.%L] -) %highlight(%msg%n)}</pattern>
+                <charset>utf8</charset>
+            </encoder>
+        </appender>
+
+        <root level="WARN">
+            <appender-ref ref="STDOUT"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <logger name="com.mirakl" level="INFO"/>
+    <logger name="org.apache.kafka.common.network.SslTransportLayer" level="ERROR"/>
+
+</configuration>

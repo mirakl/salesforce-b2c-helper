@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class FillCommerceApiSettingsTest extends PlaywrightBase {
@@ -17,6 +16,7 @@ class FillCommerceApiSettingsTest extends PlaywrightBase {
     private static final String SFCC_AUTOMATED_TESTS_PASSWORD = System.getProperty("SFCC_AUTOMATED_TESTS_PASSWORD");
     private static final String SFCC_AUTOMATED_TESTS_SECRET_KEY = System.getProperty("SFCC_AUTOMATED_TESTS_SECRET_KEY");
     private static final String SFCC_BASE_URL = System.getProperty("SFCC_BASE_URL");
+    public static final String BASE_URL = "https://" + SFCC_BASE_URL;
 
     public FillCommerceApiSettingsTest() throws IOException {
         // Nothing to do
@@ -24,7 +24,7 @@ class FillCommerceApiSettingsTest extends PlaywrightBase {
 
     @Override
     protected String getDefaultUrl() {
-        return "https://" + SFCC_BASE_URL + "/on/demandware.store/Sites-Site/";
+        return BASE_URL + "/on/demandware.store/Sites-Site/";
     }
 
     @Test
@@ -35,50 +35,27 @@ class FillCommerceApiSettingsTest extends PlaywrightBase {
             try {
                 // Login
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminLoginPage.setUsername(SFCC_AUTOMATED_TESTS_USERNAME);
-                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminLoginPage.clickSkipForNowButton();
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminLoginPage.setPassword(SFCC_AUTOMATED_TESTS_PASSWORD);
-                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminLoginPage.clickSkipForNowButton();
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminVerifyPage.fillAuthenticatorForm(SFCC_AUTOMATED_TESTS_SECRET_KEY);
-                takeScreenshot(sfccAdminLoginPage);
+                logger.info("Logged in successfully");
                 sfccAdminVerifyPage.clickSkipForNowButton();
-
-                // Feature Switches
                 Thread.sleep(TEN_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
-                sfccNavigationPage.clickSkipForNowButton();
-                takeScreenshot(sfccAdminLoginPage);
-                sfccNavigationPage.clickAdministrationSubMenus();
-                takeScreenshot(sfccAdminLoginPage);
-                try {
-                    sfccNavigationPage.clickViewFeatureSwitchPrefsSubMenus();
-                } catch (Exception e) {
-                    sfccNavigationPage.clickSkipForNowButton();
-                    takeScreenshot(sfccAdminLoginPage);
-                    sfccNavigationPage.clickAdministrationSubMenus();
-                    takeScreenshot(sfccAdminLoginPage);
-                    sfccNavigationPage.clickViewFeatureSwitchPrefsSubMenus();
-                }
+                var preferenceUrl = BASE_URL + "/on/demandware.store/Sites-Site/default%3bapp%3d__bm_admin/ViewFeatureSwitchPreferences-Show";
+                logger.info("Navigating to Feature Switches page from url: " + preferenceUrl);
+                sfccAdminVerifyPage.getPage().navigate(preferenceUrl).url();
+                // Feature Switches
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.clickSkipForNowButton();
-                takeScreenshot(sfccAdminLoginPage);
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.enableScapiHookExecutionFlag();
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.clickSkipForNowButton();
-                takeScreenshot(sfccAdminLoginPage);
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.clickApplyButton();
                 return;
             } catch (Exception e) {

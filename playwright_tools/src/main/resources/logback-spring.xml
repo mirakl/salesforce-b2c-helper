@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- be careful when editing this file as IntelliJ will format the following line and add line feeds which will mess the log format -->
+            <pattern>${CONSOLE_LOG_PATTERN:-%d{HH:mm:ss.SSS} [%thread] %-5level [%X{URI}][user:%X{userId}] %logger{36}.%M [L.%L] - %msg%n}
+            </pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT"/>
+    </root>
+    <logger name="com.mirakl" level="INFO"/>
+    <logger name="org.apache.kafka.common.network.SslTransportLayer" level="ERROR"/>
+</configuration>

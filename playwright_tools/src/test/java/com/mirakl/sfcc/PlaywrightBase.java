@@ -19,7 +19,7 @@ public class PlaywrightBase {
     private static final Logger logger = LoggerFactory.getLogger(PlaywrightBase.class);
     protected static final long TWO_SECONDS = TimeUnit.SECONDS.toMillis(2);
     protected static final long TEN_SECONDS = TimeUnit.SECONDS.toMillis(10);
-    protected static final List<String> BROWSER_DEFAULT_ARGS = List.of("--start-maximized", "--start-fullscreen", "--incognito", "--disable-save-password-bubble");
+    protected static final List<String> BROWSER_DEFAULT_ARGS = List.of("--start-maximized", "--start-fullscreen", "--incognito", "--disable-save-password-bubble" ,"--js-flags=--max-old-space-size=4096");
     protected static final String BROWSER_TYPE = "chrome";
 
     // Shared between all tests in this class.
@@ -34,7 +34,6 @@ public class PlaywrightBase {
     protected AdminLoginPage sfccAdminLoginPage;
     protected AdminPage sfccAdminPage;
     protected AdminVerifyPage sfccAdminVerifyPage;
-    protected SfccNavigationPage sfccNavigationPage;
     protected FeatureSwitchesPage featureSwitchesPage;
 
     public PlaywrightBase() throws IOException {
@@ -50,10 +49,14 @@ public class PlaywrightBase {
         page.keyboard().press("Tab");
     }
 
-    protected static void takeScreenshot(BasePage basePage){
-        byte[] buffer = basePage.getPage().screenshot();
-        logger.info("Screenshot taken from the page" , Arrays.stream(Thread.currentThread().getStackTrace()).map(StackTraceElement::toString).toArray());
-        logger.info(Base64.getEncoder().encodeToString(buffer));
+    protected static void takeScreenshot(BasePage basePage) {
+        try {
+            byte[] buffer = basePage.getPage().screenshot();
+            logger.info("Screenshot taken from the page", Arrays.stream(Thread.currentThread().getStackTrace()).map(StackTraceElement::toString).toArray());
+            logger.info(Base64.getEncoder().encodeToString(buffer));
+        } catch (Exception e) {
+            logger.error("Failed to take screenshot: " + e.getMessage());
+        }
     }
 
     @BeforeAll
@@ -70,7 +73,6 @@ public class PlaywrightBase {
     @BeforeEach
     void createContextAndPage() {
         context = browser.newContext(new Browser.NewContextOptions().setViewportSize(null));
-        context.setDefaultTimeout(TEN_SECONDS);
         page = context.newPage();
         page.navigate(getDefaultUrl());
 
@@ -78,7 +80,6 @@ public class PlaywrightBase {
         sfccAdminLoginPage = new AdminLoginPage(page);
         sfccAdminPage = new AdminPage(page);
         sfccAdminVerifyPage = new AdminVerifyPage(page);
-        sfccNavigationPage = new SfccNavigationPage(page);
         featureSwitchesPage = new FeatureSwitchesPage(page);
     }
 
