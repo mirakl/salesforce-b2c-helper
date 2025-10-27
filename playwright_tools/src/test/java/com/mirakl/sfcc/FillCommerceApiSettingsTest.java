@@ -45,8 +45,9 @@ class FillCommerceApiSettingsTest extends PlaywrightBase {
                 logger.info("Logged in successfully");
                 sfccAdminVerifyPage.clickSkipForNowButton();
                 Thread.sleep(TEN_SECONDS);
-                var url = sfccAdminVerifyPage.getPage().navigate(BASE_URL+"/on/demandware.store/Sites-Site/default%3bapp%3d__bm_admin/ViewFeatureSwitchPreferences-Show").url();
-                logger.info("Navigating to Feature Switches page from url: " + url);
+                var preferenceUrl = BASE_URL + "/on/demandware.store/Sites-Site/default%3bapp%3d__bm_admin/ViewFeatureSwitchPreferences-Show";
+                logger.info("Navigating to Feature Switches page from url: " + preferenceUrl);
+                sfccAdminVerifyPage.getPage().navigate(preferenceUrl).url();
                 // Feature Switches
                 Thread.sleep(TWO_SECONDS);
                 featureSwitchesPage.clickSkipForNowButton();
