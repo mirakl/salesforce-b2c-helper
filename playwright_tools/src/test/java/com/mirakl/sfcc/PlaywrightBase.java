@@ -62,7 +62,7 @@ public class PlaywrightBase {
     @BeforeAll
     static void launchBrowser() {
         playwright = create();
-        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setTimeout(TEN_SECONDS).setChannel(BROWSER_TYPE).setArgs(BROWSER_DEFAULT_ARGS).setHeadless(false));
+        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setTimeout(TEN_SECONDS).setChannel(BROWSER_TYPE).setArgs(BROWSER_DEFAULT_ARGS).setHeadless(true));
     }
 
     @AfterAll
