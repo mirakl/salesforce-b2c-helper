@@ -16,6 +16,7 @@ class FillCommerceApiSettingsTest extends PlaywrightBase {
     private static final String SFCC_AUTOMATED_TESTS_PASSWORD = System.getProperty("SFCC_AUTOMATED_TESTS_PASSWORD");
     private static final String SFCC_AUTOMATED_TESTS_SECRET_KEY = System.getProperty("SFCC_AUTOMATED_TESTS_SECRET_KEY");
     private static final String SFCC_BASE_URL = System.getProperty("SFCC_BASE_URL");
+    public static final String BASE_URL = "https://" + SFCC_BASE_URL;
 
     public FillCommerceApiSettingsTest() throws IOException {
         // Nothing to do
@@ -23,7 +24,7 @@ class FillCommerceApiSettingsTest extends PlaywrightBase {
 
     @Override
     protected String getDefaultUrl() {
-        return "https://" + SFCC_BASE_URL + "/on/demandware.store/Sites-Site/";
+        return BASE_URL + "/on/demandware.store/Sites-Site/";
     }
 
     @Test
@@ -34,45 +35,26 @@ class FillCommerceApiSettingsTest extends PlaywrightBase {
             try {
                 // Login
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminLoginPage.setUsername(SFCC_AUTOMATED_TESTS_USERNAME);
-                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminLoginPage.clickSkipForNowButton();
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminLoginPage.setPassword(SFCC_AUTOMATED_TESTS_PASSWORD);
-                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminLoginPage.clickSkipForNowButton();
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 sfccAdminVerifyPage.fillAuthenticatorForm(SFCC_AUTOMATED_TESTS_SECRET_KEY);
-                takeScreenshot(sfccAdminLoginPage);
+                logger.info("Logged in successfully");
                 sfccAdminVerifyPage.clickSkipForNowButton();
                 Thread.sleep(TEN_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
-                sfccNavigationPage.clickSkipForNowButton();
-                takeScreenshot(sfccAdminLoginPage);
+                var url = sfccAdminVerifyPage.getPage().navigate(BASE_URL+"/on/demandware.store/Sites-Site/default%3bapp%3d__bm_admin/ViewFeatureSwitchPreferences-Show").url();
+                logger.info("Navigating to Feature Switches page from url: " + url);
                 // Feature Switches
-                sfccNavigationPage.openAppLauncher();
-                takeScreenshot(sfccAdminLoginPage);
-                sfccNavigationPage.clickAdministration();
-                takeScreenshot(sfccAdminLoginPage);
-                sfccNavigationPage.expandGlobalPreferencesIfCollapsed();
-                takeScreenshot(sfccAdminLoginPage);
-                sfccNavigationPage.clickFeatureSwitches();
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.clickSkipForNowButton();
-                takeScreenshot(sfccAdminLoginPage);
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.enableScapiHookExecutionFlag();
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.clickSkipForNowButton();
-                takeScreenshot(sfccAdminLoginPage);
                 Thread.sleep(TWO_SECONDS);
-                takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.clickApplyButton();
                 return;
             } catch (Exception e) {
