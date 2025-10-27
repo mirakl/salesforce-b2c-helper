@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class FillCommerceApiSettingsTest extends PlaywrightBase {
@@ -49,23 +48,18 @@ class FillCommerceApiSettingsTest extends PlaywrightBase {
                 sfccAdminVerifyPage.fillAuthenticatorForm(SFCC_AUTOMATED_TESTS_SECRET_KEY);
                 takeScreenshot(sfccAdminLoginPage);
                 sfccAdminVerifyPage.clickSkipForNowButton();
-
-                // Feature Switches
                 Thread.sleep(TEN_SECONDS);
                 takeScreenshot(sfccAdminLoginPage);
                 sfccNavigationPage.clickSkipForNowButton();
                 takeScreenshot(sfccAdminLoginPage);
-                sfccNavigationPage.clickAdministrationSubMenus();
+                // Feature Switches
+                sfccNavigationPage.openAppLauncher();
                 takeScreenshot(sfccAdminLoginPage);
-                try {
-                    sfccNavigationPage.clickViewFeatureSwitchPrefsSubMenus();
-                } catch (Exception e) {
-                    sfccNavigationPage.clickSkipForNowButton();
-                    takeScreenshot(sfccAdminLoginPage);
-                    sfccNavigationPage.clickAdministrationSubMenus();
-                    takeScreenshot(sfccAdminLoginPage);
-                    sfccNavigationPage.clickViewFeatureSwitchPrefsSubMenus();
-                }
+                sfccNavigationPage.clickAdministration();
+                takeScreenshot(sfccAdminLoginPage);
+                sfccNavigationPage.expandGlobalPreferencesIfCollapsed();
+                takeScreenshot(sfccAdminLoginPage);
+                sfccNavigationPage.clickFeatureSwitches();
                 Thread.sleep(TWO_SECONDS);
                 takeScreenshot(sfccAdminLoginPage);
                 featureSwitchesPage.clickSkipForNowButton();
