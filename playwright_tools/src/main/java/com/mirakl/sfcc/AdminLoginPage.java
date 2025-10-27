@@ -19,7 +19,7 @@ public class AdminLoginPage extends BasePage {
     }
 
     public void setUsername(String username) {
-        passwordInput = page.locator("#username");
+        usernameInput = page.locator("#username");
         logger.info("Setting user");
         usernameInput.fill(username);
         loginButton.click();
