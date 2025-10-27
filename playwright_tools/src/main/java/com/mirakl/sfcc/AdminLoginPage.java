@@ -15,7 +15,7 @@ public class AdminLoginPage extends BasePage {
 
     public AdminLoginPage(Page page) {
         super(page);
-        loginButton = page.locator("#login");
+        loginButton = page.locator("#kc-login");
     }
 
     public void setUsername(String username) {
