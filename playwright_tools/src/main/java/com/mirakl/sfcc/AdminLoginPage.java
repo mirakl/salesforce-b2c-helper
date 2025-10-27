@@ -9,6 +9,7 @@ public class AdminLoginPage extends BasePage {
 
     private static final Logger logger = LoggerFactory.getLogger(AdminLoginPage.class);
 
+    private Locator usernameInput;
     private Locator passwordInput;
     private final Locator loginButton;
 
@@ -18,14 +19,15 @@ public class AdminLoginPage extends BasePage {
     }
 
     public void setUsername(String username) {
+        passwordInput = page.locator("#username");
         logger.info("Setting user");
-        passwordInput.fill(username);
+        usernameInput.fill(username);
         loginButton.click();
         logger.info("Set user successfully");
     }
 
     public void setPassword(String password) {
-        passwordInput = page.locator("#idToken2");
+        passwordInput = page.locator("#password");
         logger.info("Setting password");
         passwordInput.fill(password);
         loginButton.click();
