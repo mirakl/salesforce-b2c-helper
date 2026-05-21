@@ -38,34 +38,35 @@ class InspectBmPagesTest extends PlaywrightBase {
         logger.info("Logged in - current URL: {}", page.url());
     }
 
+    @SuppressWarnings("unchecked")
     private void inspectPage(String url, String pageName) throws InterruptedException {
         logger.info("========== INSPECTING {} ==========", pageName);
         page.navigate(url);
         Thread.sleep(TWO_SECONDS);
         logger.info("Page URL: {}", page.url());
 
-        List<String> textareas = page.evaluate(
+        List<String> textareas = (List<String>) page.evaluate(
             "() => Array.from(document.querySelectorAll('textarea')).map(el => " +
             "'name=' + el.name + ' | id=' + el.id + ' | class=' + el.className + ' | value=' + el.value.substring(0, 200))"
         );
         logger.info("--- TEXTAREAS ({}) ---", textareas.size());
         textareas.forEach(t -> logger.info("  {}", t));
 
-        List<String> buttons = page.evaluate(
+        List<String> buttons = (List<String>) page.evaluate(
             "() => Array.from(document.querySelectorAll('input[type=submit], button')).map(el => " +
             "'tag=' + el.tagName + ' | name=' + el.name + ' | id=' + el.id + ' | value=' + el.value + ' | text=' + (el.innerText||'').trim().substring(0,60) + ' | class=' + el.className)"
         );
         logger.info("--- BUTTONS ({}) ---", buttons.size());
         buttons.forEach(b -> logger.info("  {}", b));
 
-        List<String> selects = page.evaluate(
+        List<String> selects = (List<String>) page.evaluate(
             "() => Array.from(document.querySelectorAll('select')).map(el => " +
             "'name=' + el.name + ' | id=' + el.id + ' | options=[' + Array.from(el.options).map(o => o.value+':'+o.text).join(', ') + ']')"
         );
         logger.info("--- SELECTS ({}) ---", selects.size());
         selects.forEach(s -> logger.info("  {}", s));
 
-        List<String> forms = page.evaluate(
+        List<String> forms = (List<String>) page.evaluate(
             "() => Array.from(document.querySelectorAll('form')).map(el => " +
             "'id=' + el.id + ' | name=' + el.name + ' | action=' + el.action + ' | method=' + el.method)"
         );
