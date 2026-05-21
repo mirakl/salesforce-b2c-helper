@@ -23,7 +23,10 @@ public class ConfigureSandboxPermissionsPage extends BasePage {
         fileContentTextarea.waitFor();
         fileContentTextarea.click();
         fileContentTextarea.fill(jsonContent);
-        saveButton.click();
+        page.waitForResponse(
+            response -> response.url().contains("-Dispatch"),
+            () -> saveButton.click()
+        );
         fileContentTextarea.waitFor();
         logger.info("{} permissions configured successfully", settingsName);
     }
