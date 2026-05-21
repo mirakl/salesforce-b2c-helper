@@ -65,16 +65,26 @@ class ConfigureSandboxPermissionsTest extends PlaywrightBase {
             "    {\n" +
             "      \"client_id\": \"" + ADMIN_OCAPI_KEY + "\",\n" +
             "      \"resources\": [\n" +
-            "        {\"resource_id\": \"/code_versions\", \"methods\": [\"get\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
-            "        {\"resource_id\": \"/code_versions/*\", \"methods\": [\"patch\", \"delete\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
+            "        {\"methods\": [\"get\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\", \"resource_id\": \"/code_versions\"},\n" +
+            "        {\"methods\": [\"patch\", \"delete\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\", \"resource_id\": \"/code_versions/*\"},\n" +
+            "        {\"resource_id\": \"/custom_objects/MiraklAsynchronousOfferImportTracking/*\", \"methods\": [\"get\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\", \"cache_time\": 900, \"version_range\": {\"from\": \"19.5\"}},\n" +
+            "        {\"methods\": [\"post\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\", \"resource_id\": \"/jobs/*/executions\"},\n" +
+            "        {\"methods\": [\"get\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\", \"resource_id\": \"/jobs/*/executions/*\"},\n" +
+            "        {\"methods\": [\"post\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\", \"resource_id\": \"/sites/*/cartridges\"},\n" +
+            "        {\"resource_id\": \"/system_object_definitions/Product/attribute_definition_search\", \"methods\": [\"post\"], \"read_attributes\": \"(next,hits.(id,description,display_name,localizable,multi_value_type))\", \"write_attributes\": \"(**)\"},\n" +
+            "        {\"resource_id\": \"/products/*\", \"methods\": [\"put\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(id, name, last_modified, online_flag, owning_catalog_id, searchable, type)\"},\n" +
+            "        {\"resource_id\": \"/catalogs/*/categories/*/products/*\", \"methods\": [\"put\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(catalog_id, category_id, product_id)\"},\n" +
+            "        {\"resource_id\": \"/inventory_lists/*/product_inventory_records/*\", \"methods\": [\"put\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(perpetual_flag, product_id)\"},\n" +
+            "        {\"resource_id\": \"/products/*/variations/*\", \"methods\": [\"delete\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(product_id)\"}\n" +
+            "      ]\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"client_id\": \"be589f18-fc9e-4176-b1b7-7aff5724c363\",\n" +
+            "      \"resources\": [\n" +
+            "        {\"resource_id\": \"/code_versions/*\", \"methods\": [\"put\", \"patch\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
             "        {\"resource_id\": \"/jobs/*/executions\", \"methods\": [\"post\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
             "        {\"resource_id\": \"/jobs/*/executions/*\", \"methods\": [\"get\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
-            "        {\"resource_id\": \"/sites/*/cartridges\", \"methods\": [\"post\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
-            "        {\"resource_id\": \"/products/*\", \"methods\": [\"put\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
-            "        {\"resource_id\": \"/catalogs/*/categories/*/products/*\", \"methods\": [\"put\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
-            "        {\"resource_id\": \"/inventory_lists/*/product_inventory_records/*\", \"methods\": [\"put\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
-            "        {\"resource_id\": \"/system_object_definitions/Product/attribute_definition_search\", \"methods\": [\"post\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
-            "        {\"resource_id\": \"/products/*/variations/*\", \"methods\": [\"delete\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"}\n" +
+            "        {\"resource_id\": \"/sites/*/cartridges\", \"methods\": [\"post\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"}\n" +
             "      ]\n" +
             "    }\n" +
             "  ]\n" +
@@ -91,20 +101,9 @@ class ConfigureSandboxPermissionsTest extends PlaywrightBase {
         configurePage.fillAndSave(buildWebdavJson(), "WebDAV");
 
         page.navigate(BM_BASE + "/ViewWapiSettings-Start");
-        takeScreenshot(new com.mirakl.sfcc.BasePage(page) {});
-        logger.info("OCAPI page URL: {}", page.url());
-        @SuppressWarnings("unchecked")
-        var allInputs = (java.util.List<String>) page.evaluate(
-            "() => Array.from(document.querySelectorAll('input')).map(el => 'type=' + el.type + ' name=' + el.name + ' id=' + el.id + ' value=' + el.value)"
-        );
-        logger.info("ALL INPUTS on OCAPI page: {}", allInputs);
-        @SuppressWarnings("unchecked")
-        var allAnchors = (java.util.List<String>) page.evaluate(
-            "() => Array.from(document.querySelectorAll('a')).map(a => 'text=' + a.innerText.trim().substring(0,40) + ' href=' + a.href).filter(l => l.length > 10)"
-        );
-        logger.info("ALL ANCHORS on OCAPI page: {}", allAnchors);
         configurePage.fillAndSave(buildOcapiDataJson(), "OCAPI Data API");
-        takeScreenshot(new com.mirakl.sfcc.BasePage(page) {});
-        logger.info("OCAPI textarea value after save: {}", page.locator("textarea[name='FileContent']").inputValue().substring(0, Math.min(200, page.locator("textarea[name='FileContent']").inputValue().length())));
+
+        String savedValue = page.locator("textarea[name='FileContent']").inputValue();
+        logger.info("OCAPI textarea value after save (first 200 chars): {}", savedValue.substring(0, Math.min(200, savedValue.length())));
     }
 }
