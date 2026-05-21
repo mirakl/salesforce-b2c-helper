@@ -2,7 +2,6 @@ package com.mirakl.sfcc;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
-import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class ConfigureSandboxPermissionsPage extends BasePage {
         fileContentTextarea.click();
         fileContentTextarea.fill(jsonContent);
         saveButton.click();
-        page.waitForLoadState(LoadState.NETWORKIDLE);
+        fileContentTextarea.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         logger.info("{} permissions configured successfully", settingsName);
     }
 }

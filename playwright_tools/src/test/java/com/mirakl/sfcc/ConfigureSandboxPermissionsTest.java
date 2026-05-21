@@ -1,6 +1,5 @@
 package com.mirakl.sfcc;
 
-import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -40,7 +39,6 @@ class ConfigureSandboxPermissionsTest extends PlaywrightBase {
         sfccAdminVerifyPage.clickSkipForNowButton();
 
         page.waitForURL("**ViewBM-Home**");
-        page.waitForLoadState(LoadState.NETWORKIDLE);
         logger.info("Logged in successfully");
     }
 
@@ -89,11 +87,9 @@ class ConfigureSandboxPermissionsTest extends PlaywrightBase {
         var configurePage = new ConfigureSandboxPermissionsPage(page);
 
         page.navigate(BM_BASE + "/ViewWebdavClientPermissions-Start");
-        page.waitForLoadState(LoadState.NETWORKIDLE);
         configurePage.fillAndSave(buildWebdavJson(), "WebDAV");
 
         page.navigate(BM_BASE + "/ViewWapiSettings-Start");
-        page.waitForLoadState(LoadState.NETWORKIDLE);
         configurePage.fillAndSave(buildOcapiDataJson(), "OCAPI Data API");
     }
 }
