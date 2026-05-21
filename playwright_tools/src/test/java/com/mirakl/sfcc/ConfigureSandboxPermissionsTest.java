@@ -1,0 +1,95 @@
+package com.mirakl.sfcc;
+
+import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+
+class ConfigureSandboxPermissionsTest extends PlaywrightBase {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConfigureSandboxPermissionsTest.class);
+    private static final String USERNAME = System.getProperty("SFCC_AUTOMATED_TESTS_USERNAME");
+    private static final String PASSWORD = System.getProperty("SFCC_AUTOMATED_TESTS_PASSWORD");
+    private static final String SECRET_KEY = System.getProperty("SFCC_AUTOMATED_TESTS_SECRET_KEY");
+    private static final String SFCC_BASE_URL = System.getProperty("SFCC_BASE_URL");
+    private static final String ADMIN_OCAPI_KEY = System.getProperty("ADMIN_OCAPI_KEY");
+    private static final String BASE_URL = "https://" + SFCC_BASE_URL;
+    private static final String BM_BASE = BASE_URL + "/on/demandware.store/Sites-Site/default%3bapp%3d__bm_admin";
+
+    public ConfigureSandboxPermissionsTest() throws IOException {}
+
+    @Override
+    protected String getDefaultUrl() {
+        return BASE_URL + "/on/demandware.store/Sites-Site/";
+    }
+
+    private void login() throws InterruptedException {
+        Thread.sleep(TWO_SECONDS);
+        sfccAdminLoginPage.setUsername(USERNAME);
+        sfccAdminLoginPage.clickSkipForNowButton();
+        Thread.sleep(TWO_SECONDS);
+        sfccAdminLoginPage.setPassword(PASSWORD);
+        sfccAdminLoginPage.clickSkipForNowButton();
+        Thread.sleep(TWO_SECONDS);
+        sfccAdminVerifyPage.fillAuthenticatorForm(SECRET_KEY);
+        sfccAdminVerifyPage.clickSkipForNowButton();
+        Thread.sleep(TEN_SECONDS);
+        logger.info("Logged in successfully");
+    }
+
+    private String buildWebdavJson() {
+        return "{\n" +
+            "  \"clients\": [\n" +
+            "    {\n" +
+            "      \"client_id\": \"" + ADMIN_OCAPI_KEY + "\",\n" +
+            "      \"permissions\": [\n" +
+            "        {\"path\": \"/impex\", \"operations\": [\"read_write\"]},\n" +
+            "        {\"path\": \"/cartridges\", \"operations\": [\"read_write\"]},\n" +
+            "        {\"path\": \"/static\", \"operations\": [\"read_write\"]}\n" +
+            "      ]\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+    }
+
+    private String buildOcapiDataJson() {
+        return "{\n" +
+            "  \"_v\": \"23.2\",\n" +
+            "  \"clients\": [\n" +
+            "    {\n" +
+            "      \"client_id\": \"" + ADMIN_OCAPI_KEY + "\",\n" +
+            "      \"resources\": [\n" +
+            "        {\"resource_id\": \"/code_versions\", \"methods\": [\"get\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
+            "        {\"resource_id\": \"/code_versions/*\", \"methods\": [\"patch\", \"delete\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
+            "        {\"resource_id\": \"/jobs/*/executions\", \"methods\": [\"post\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
+            "        {\"resource_id\": \"/jobs/*/executions/*\", \"methods\": [\"get\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
+            "        {\"resource_id\": \"/sites/*/cartridges\", \"methods\": [\"post\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
+            "        {\"resource_id\": \"/products/*\", \"methods\": [\"put\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
+            "        {\"resource_id\": \"/catalogs/*/categories/*/products/*\", \"methods\": [\"put\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
+            "        {\"resource_id\": \"/inventory_lists/*/product_inventory_records/*\", \"methods\": [\"put\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
+            "        {\"resource_id\": \"/system_object_definitions/Product/attribute_definition_search\", \"methods\": [\"post\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
+            "        {\"resource_id\": \"/products/*/variations/*\", \"methods\": [\"delete\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"}\n" +
+            "      ]\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
+    }
+
+    @Test
+    void configureSandboxPermissions() throws InterruptedException {
+        login();
+
+        var configurePage = new ConfigureSandboxPermissionsPage(page);
+
+        // Configure WebDAV Client Permissions
+        page.navigate(BM_BASE + "/ViewWebdavClientPermissions-Start");
+        Thread.sleep(TWO_SECONDS);
+        configurePage.fillAndSave(buildWebdavJson(), "WebDAV");
+
+        // Configure OCAPI Data API Settings
+        page.navigate(BM_BASE + "/ViewWapiSettings-Start");
+        Thread.sleep(TWO_SECONDS);
+        configurePage.fillAndSave(buildOcapiDataJson(), "OCAPI Data API");
+    }
+}
