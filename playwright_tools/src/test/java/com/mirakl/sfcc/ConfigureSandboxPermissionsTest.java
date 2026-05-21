@@ -101,7 +101,7 @@ class ConfigureSandboxPermissionsTest extends PlaywrightBase {
         configurePage.fillAndSave(buildWebdavJson(), "WebDAV");
 
         page.navigate(BM_BASE + "/ViewWapiSettings-Start");
-        configurePage.fillAndSave(buildOcapiDataJson(), "OCAPI Data API");
+        configurePage.selectDataTypeAndFillAndSave(buildOcapiDataJson(), "OCAPI Data API");
 
         String savedValue = page.locator("textarea[name='FileContent']").inputValue();
         logger.info("OCAPI textarea value after save (first 200 chars): {}", savedValue.substring(0, Math.min(200, savedValue.length())));
