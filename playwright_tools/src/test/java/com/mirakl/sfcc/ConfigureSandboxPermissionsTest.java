@@ -91,6 +91,20 @@ class ConfigureSandboxPermissionsTest extends PlaywrightBase {
         configurePage.fillAndSave(buildWebdavJson(), "WebDAV");
 
         page.navigate(BM_BASE + "/ViewWapiSettings-Start");
+        takeScreenshot(new com.mirakl.sfcc.BasePage(page) {});
+        logger.info("OCAPI page URL: {}", page.url());
+        @SuppressWarnings("unchecked")
+        var allInputs = (java.util.List<String>) page.evaluate(
+            "() => Array.from(document.querySelectorAll('input')).map(el => 'type=' + el.type + ' name=' + el.name + ' id=' + el.id + ' value=' + el.value)"
+        );
+        logger.info("ALL INPUTS on OCAPI page: {}", allInputs);
+        @SuppressWarnings("unchecked")
+        var allAnchors = (java.util.List<String>) page.evaluate(
+            "() => Array.from(document.querySelectorAll('a')).map(a => 'text=' + a.innerText.trim().substring(0,40) + ' href=' + a.href).filter(l => l.length > 10)"
+        );
+        logger.info("ALL ANCHORS on OCAPI page: {}", allAnchors);
         configurePage.fillAndSave(buildOcapiDataJson(), "OCAPI Data API");
+        takeScreenshot(new com.mirakl.sfcc.BasePage(page) {});
+        logger.info("OCAPI textarea value after save: {}", page.locator("textarea[name='FileContent']").inputValue().substring(0, Math.min(200, page.locator("textarea[name='FileContent']").inputValue().length())));
     }
 }
