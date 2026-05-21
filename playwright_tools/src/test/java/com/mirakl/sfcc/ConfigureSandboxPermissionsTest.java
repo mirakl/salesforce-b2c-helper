@@ -1,6 +1,7 @@
 package com.mirakl.sfcc;
 
 import com.microsoft.playwright.options.WaitForSelectorState;
+import com.microsoft.playwright.Locator;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,19 +27,19 @@ class ConfigureSandboxPermissionsTest extends PlaywrightBase {
     }
 
     private void login() {
-        page.locator("#username").waitFor(new com.microsoft.playwright.Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        page.locator("#username").waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         sfccAdminLoginPage.setUsername(USERNAME);
         sfccAdminLoginPage.clickSkipForNowButton();
 
-        page.locator("#password").waitFor(new com.microsoft.playwright.Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        page.locator("#password").waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         sfccAdminLoginPage.setPassword(PASSWORD);
         sfccAdminLoginPage.clickSkipForNowButton();
 
-        page.locator("#input-9").waitFor(new com.microsoft.playwright.Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
+        page.locator("#input-9").waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         sfccAdminVerifyPage.fillAuthenticatorForm(SECRET_KEY);
         sfccAdminVerifyPage.clickSkipForNowButton();
 
-        page.waitForURL("**ViewBM-Home**");
+        page.locator("#input-9").waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
         logger.info("Logged in successfully");
     }
 
