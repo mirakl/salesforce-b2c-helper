@@ -22,7 +22,6 @@ public class ConfigureSandboxPermissionsPage extends BasePage {
     public void fillAndSave(String jsonContent, String settingsName) {
         logger.info("Configuring {} permissions...", settingsName);
         fileContentTextarea.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
-        saveButton.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         fileContentTextarea.click();
         fileContentTextarea.fill(jsonContent);
         saveButton.click();
