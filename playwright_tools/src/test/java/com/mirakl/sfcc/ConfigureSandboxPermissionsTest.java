@@ -1,5 +1,7 @@
 package com.mirakl.sfcc;
 
+import com.microsoft.playwright.options.LoadState;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,17 +26,21 @@ class ConfigureSandboxPermissionsTest extends PlaywrightBase {
         return BASE_URL + "/on/demandware.store/Sites-Site/";
     }
 
-    private void login() throws InterruptedException {
-        Thread.sleep(TWO_SECONDS);
+    private void login() {
+        page.locator("#username").waitFor(new com.microsoft.playwright.Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         sfccAdminLoginPage.setUsername(USERNAME);
         sfccAdminLoginPage.clickSkipForNowButton();
-        Thread.sleep(TWO_SECONDS);
+
+        page.locator("#password").waitFor(new com.microsoft.playwright.Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         sfccAdminLoginPage.setPassword(PASSWORD);
         sfccAdminLoginPage.clickSkipForNowButton();
-        Thread.sleep(TWO_SECONDS);
+
+        page.locator("#input-9").waitFor(new com.microsoft.playwright.Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         sfccAdminVerifyPage.fillAuthenticatorForm(SECRET_KEY);
         sfccAdminVerifyPage.clickSkipForNowButton();
-        Thread.sleep(TEN_SECONDS);
+
+        page.waitForURL("**ViewBM-Home**");
+        page.waitForLoadState(LoadState.NETWORKIDLE);
         logger.info("Logged in successfully");
     }
 
@@ -77,19 +83,17 @@ class ConfigureSandboxPermissionsTest extends PlaywrightBase {
     }
 
     @Test
-    void configureSandboxPermissions() throws InterruptedException {
+    void configureSandboxPermissions() {
         login();
 
         var configurePage = new ConfigureSandboxPermissionsPage(page);
 
-        // Configure WebDAV Client Permissions
         page.navigate(BM_BASE + "/ViewWebdavClientPermissions-Start");
-        Thread.sleep(TWO_SECONDS);
+        page.waitForLoadState(LoadState.NETWORKIDLE);
         configurePage.fillAndSave(buildWebdavJson(), "WebDAV");
 
-        // Configure OCAPI Data API Settings
         page.navigate(BM_BASE + "/ViewWapiSettings-Start");
-        Thread.sleep(TWO_SECONDS);
+        page.waitForLoadState(LoadState.NETWORKIDLE);
         configurePage.fillAndSave(buildOcapiDataJson(), "OCAPI Data API");
     }
 }
