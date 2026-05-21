@@ -1,0 +1,47 @@
+name: "Configure Sandbox Permissions"
+description: "Configure WebDAV and OCAPI Data API permissions in Business Manager after a sandbox reset"
+inputs:
+  SFCC_AUTOMATED_TESTS_USERNAME:
+    description: "SFCC Automated Tests Username"
+    required: true
+  SFCC_AUTOMATED_TESTS_PASSWORD:
+    description: "SFCC Automated Tests Password"
+    required: true
+  SFCC_AUTOMATED_TESTS_SECRET_KEY:
+    description: "SFCC Automated Tests Secret Key"
+    required: true
+  SFCC_BASE_URL:
+    description: "SFCC Base URL"
+    required: true
+  ADMIN_OCAPI_KEY:
+    description: "The OCAPI client ID to grant WebDAV and OCAPI Data API permissions to"
+    required: true
+
+runs:
+  using: composite
+  steps:
+
+    - name: Setup-java
+      uses: actions/setup-java@v4
+      with:
+        distribution: zulu
+        java-version: 21
+
+    - name: Install playwright dependencies
+      working-directory: ${{ github.action_path }}/../playwright_tools
+      run: |
+        sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
+        sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --force chrome"
+      shell: bash
+
+    - name: Configure sandbox permissions
+      working-directory: ${{ github.action_path }}/../playwright_tools
+      run: |
+        mvn clean test \
+          -Dtest=ConfigureSandboxPermissionsTest \
+          -DSFCC_AUTOMATED_TESTS_USERNAME=${{ inputs.SFCC_AUTOMATED_TESTS_USERNAME }} \
+          -DSFCC_AUTOMATED_TESTS_PASSWORD=${{ inputs.SFCC_AUTOMATED_TESTS_PASSWORD }} \
+          -DSFCC_AUTOMATED_TESTS_SECRET_KEY=${{ inputs.SFCC_AUTOMATED_TESTS_SECRET_KEY }} \
+          -DSFCC_BASE_URL=${{ inputs.SFCC_BASE_URL }} \
+          -DADMIN_OCAPI_KEY=${{ inputs.ADMIN_OCAPI_KEY }}
+      shell: bash
