@@ -16,6 +16,10 @@ BM 26.9 rendered the Feature Switches Apply control as a `<button>` instead of a
 
 ## Ground rules
 
+- **Run from the root of a `salesforce-b2c-helper` checkout**, except the markup capture of
+  step 2. Check first: `git remote get-url origin` must name `mirakl/salesforce-b2c-helper`, and
+  `git rev-parse --show-prefix` must print nothing. Otherwise stop: every path below is relative to
+  that root.
 - **Public repository.** The diff, the captured markup and the PR text are world-readable: no real
   hosts (use `sandbox.example`), no credentials, TOTP seeds or client ids, no customer, tenant or
   sandbox names (AGENTS.md § Public repository).
@@ -49,18 +53,21 @@ State the broken step and locator before changing anything.
 Get the HTML of what the page object touches, from a logged-in BM session on the affected sandbox:
 the whole `<form>` for a BM screen, the input and its submit button for a login step.
 
+Run this step from a scratch directory outside the checkout. `playwright-cli` writes its snapshots
+to `.playwright-cli/` in the working directory, and snapshots, storage state and HAR files carry
+session cookies: they must never be committed.
+
 - **`playwright-cli`** (npm package `@playwright/cli`; ask before installing it globally):
   `playwright-cli open --browser=chrome --headed https://<bm-host>/on/demandware.store/Sites-Site/`,
   let the user finish login and MFA in that window, then `playwright-cli goto` the pipeline URL
   (`.../Sites-Site/default%3bapp%3d__bm_admin/<Pipeline>-<Action>`), `playwright-cli snapshot` to
   find the element's ref, and `playwright-cli eval "el => el.outerHTML" <ref>`.
 - **Without it**, the Playwright CLI bundled with the Maven dependency opens a headed Chrome in
-  which the user logs in and copies the element's outer HTML from DevTools:
-  `mvn -f playwright_tools/pom.xml exec:java -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="open --channel chrome https://<bm-host>/on/demandware.store/Sites-Site/"`.
+  which the user logs in and copies the element's outer HTML from DevTools. `<helper-checkout>` is
+  the checkout's absolute path:
+  `mvn -f <helper-checkout>/playwright_tools/pom.xml exec:java -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="open --channel chrome https://<bm-host>/on/demandware.store/Sites-Site/"`.
 
-Work from a scratch directory outside the checkout: snapshots, storage state and HAR files carry
-session cookies and must never be committed. Diff the captured markup against the locators: that
-difference is the fix.
+Diff the captured markup against the locators: that difference is the fix.
 
 ## 3. Write the offline test first
 
@@ -100,15 +107,16 @@ mvn -q -f playwright_tools/pom.xml test-compile
 PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 mvn -f playwright_tools/pom.xml test -Dtest='*PageTest'
 ```
 
-The offline tests launch the `chrome` channel: Google Chrome must be installed. Report the
-`Tests run:` lines before and after the fix. The final proof is a live run of the fixed flow on the
-sandbox the user named: `Clicked Apply button successfully` or
-`OCAPI Data API permissions configured successfully` in the log, and the setting visible in BM
-after a reload.
+Maven must run on JDK 21 or later (`mvn -v`), and the offline tests launch the `chrome` channel:
+Google Chrome must be installed. Report the `Tests run:` lines before and after the fix. The
+final proof is a live run of the fixed flow on the sandbox the user named:
+`Clicked Apply button successfully` or `OCAPI Data API permissions configured successfully` in the
+log, and the setting visible in BM after a reload.
 
 ## 6. Ship
 
 - PR title: plain sentence-case imperative, no type prefix or ticket key
-  (`Fix feature switch activation`); branch: a bare slug. The body says what BM changed (old and
-  new markup, in words), the locator change, the test, and how it was verified.
+  (`Fix feature switch activation`); branch: a kebab-case slug (AGENTS.md § Pull requests). The
+  body says what BM changed (old and new markup, in words), the locator change, the test, and how
+  it was verified.
 - Consumers get nothing until a release: after the merge, use the `release` skill.

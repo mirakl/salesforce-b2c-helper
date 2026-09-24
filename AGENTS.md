@@ -53,6 +53,8 @@ From [`playwright_tools/pom.xml`](playwright_tools/pom.xml) and the two `action.
 
 Local prerequisites:
 
+- **Maven running on JDK 21 or later**: `mvn -v` prints the JDK it uses, which can differ from
+  `java -version`. An older JDK fails the compile with `invalid target release: 21`.
 - **Google Chrome** installed, for both kinds of tests. Install it through Playwright if needed
   (see [Common commands](#common-commands)).
 - **`PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`** in the environment of every Maven run that starts
@@ -226,9 +228,14 @@ This repository is **public**; everything committed is world-readable.
 - Captured BM markup goes through the same filter: host replaced by `sandbox.example`, CSRF tokens
   and user- or instance-specific values removed, trimmed to the element the page object touches.
 - Credentials stay action inputs; the consumer passes them from its own secrets.
-- Git: pull request titles are plain sentence-case imperatives with no type prefix or ticket key
-  (`Fix feature switch activation`, `Speed up Playwright setup in composite actions`); branches are
-  bare slugs (`fix-feature-switch-activation`); pull requests are squash-merged.
+
+## Pull requests
+
+- Follow the recent pull requests (#7, #10, #11): the title is a plain sentence-case imperative
+  with no type prefix or ticket key (`Fix feature switch activation`, `Speed up Playwright setup in
+  composite actions`), and the branch is a kebab-case slug (`fix-feature-switch-activation`).
+  Older history is mixed: underscore branches (`update_dependencies`) and one `feat:` title (#8).
+- The repository only allows squash merges.
 
 ## Where to make a change
 

@@ -12,6 +12,10 @@ new `vN` exists **and** every consumer pin points at it. This skill does both, i
 
 ## Guardrails
 
+- **Run every command from the root of a `salesforce-b2c-helper` checkout.** Check first:
+  `git remote get-url origin` must name `mirakl/salesforce-b2c-helper`, and
+  `git rev-parse --show-prefix` must print nothing. Otherwise stop: another repository's tags and
+  `master` would scope and publish the wrong version.
 - **A published tag is permanent.** Never move, delete or re-create a tag or release: every
   consumer pinned to it would silently change behaviour. A fix ships as the next `vN`.
 - **Publishing is public and immediate.** Show the target SHA, the tag, the title and the commit
@@ -23,6 +27,7 @@ new `vN` exists **and** every consumer pin points at it. This skill does both, i
 ```bash
 git fetch origin master --tags --quiet
 LAST=$(git tag -l 'v*' --sort=-v:refname | head -1)
+: "${LAST:?no vN tag: not a salesforce-b2c-helper checkout, or tags not fetched}"
 NEXT=v$(( ${LAST#v} + 1 ))
 SHA=$(git rev-parse origin/master)
 echo "last=$LAST next=$NEXT sha=$SHA"
@@ -33,13 +38,18 @@ git diff --stat "$LAST..$SHA"
 Later steps write these values as `<next>` and `<sha>`: substitute the printed ones.
 
 - `v*` leaves out the stray `list` tag; versions are bare majors (`v7` → `v8`).
-- Empty range: nothing to release, stop. A range that only touches what consumers never run
-  (`AGENTS.md`, `CLAUDE.md`, `.claude/`, READMEs): say so and stop unless the user still wants a
-  version.
+- No `vN` tag: the guard above stops the block. Never publish `v1`.
+- Empty range: nothing to release, stop. If the user expects a change, it has not reached
+  `origin/master` yet: check its pull request with
+  `gh pr view <N> --repo mirakl/salesforce-b2c-helper --json state,baseRefName,mergedAt` (a pull
+  request merged into another branch is not on `master`). That is how `v6` happened: it was
+  published while #10 was still open, so it tagged the `v5` commit.
+- A range that only touches what consumers never run (`AGENTS.md`, `CLAUDE.md`, `.claude/`,
+  READMEs): say so and stop unless the user still wants a version.
 - When the user names a commit instead, use its full SHA, and only if
-  `git merge-base --is-ancestor <sha> origin/master` succeeds. Always publish on the SHA: a release
-  targeting `master` takes whatever the branch holds at publish time, which is how `v6` landed on
-  the `v5` commit, before #10 merged.
+  `git merge-base --is-ancestor <sha> origin/master` succeeds.
+- Publish on `<sha>`, never on `master`: `master` can move between the build gate and the
+  publish, and the release would then ship a commit the gate never built.
 
 ## 2. Build gate on the target
 
@@ -52,10 +62,10 @@ PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 mvn -f <scratch-dir>/helper-release/playwrigh
 git worktree remove <scratch-dir>/helper-release
 ```
 
-The offline tests launch the `chrome` channel: Google Chrome must be installed. Report the
-`Tests run:` line; stop on any failure. These tests cover markup, not a live BM: when the range
-changes a live flow, the login or an action, ask whether it was run on a sandbox before merging,
-and say so in the release notes.
+Maven must run on JDK 21 or later (`mvn -v`), and the offline tests launch the `chrome` channel:
+Google Chrome must be installed. Report the `Tests run:` line; stop on any failure. These tests
+cover markup, not a live BM: when the range changes a live flow, the login or an action, ask
+whether it was run on a sandbox before merging, and say so in the release notes.
 
 ## 3. Publish
 
