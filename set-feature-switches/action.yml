@@ -24,18 +24,20 @@ runs:
         distribution: zulu
         java-version: 21
 
-    - name: Install playwright dependencies
+    - name: Install Chrome
       working-directory:  ${{ github.action_path }}/../playwright_tools
       run: |
-        sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
         sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --force chrome"
       shell: bash
 
     - name: Run Maven tests
       working-directory: ${{ github.action_path }}/../playwright_tools
+      env:
+        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
       run: |
         mvn clean test \
           -e -X \
+          -Dtest=FillCommerceApiSettingsTest \
           -DSFCC_AUTOMATED_TESTS_USERNAME=${{ inputs.SFCC_AUTOMATED_TESTS_USERNAME }} \
           -DSFCC_AUTOMATED_TESTS_PASSWORD=${{ inputs.SFCC_AUTOMATED_TESTS_PASSWORD }} \
           -DSFCC_AUTOMATED_TESTS_SECRET_KEY=${{ inputs.SFCC_AUTOMATED_TESTS_SECRET_KEY }} \
