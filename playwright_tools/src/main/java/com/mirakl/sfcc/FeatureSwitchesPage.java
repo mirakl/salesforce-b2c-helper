@@ -15,7 +15,7 @@ public class FeatureSwitchesPage extends BasePage {
     public FeatureSwitchesPage(Page page) {
         super(page);
         scapiHookExecutionFlag = page.locator("//input[@name='ScapiHookExecutionEnabled']");
-        applyButton = page.locator("//td[@data-automation='apply-button']");
+        applyButton = page.locator("//*[@data-automation='apply-button']");
     }
 
     public void enableScapiHookExecutionFlag() {
@@ -30,7 +30,10 @@ public class FeatureSwitchesPage extends BasePage {
 
     public void clickApplyButton() {
         logger.info("Clicking Apply button");
-        applyButton.click();
+        page.waitForResponse(
+            response -> response.url().contains("ViewFeatureSwitchPreferences-Update"),
+            () -> applyButton.click()
+        );
         logger.info("Clicked Apply button successfully");
     }
 
