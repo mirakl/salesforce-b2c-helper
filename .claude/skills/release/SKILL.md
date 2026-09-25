@@ -2,7 +2,6 @@
 name: release
 description: Release a new salesforce-b2c-helper version — scope the change since the last vN, run the build gate on the exact master commit, publish the next vN GitHub release on it, then bump every consumer pin (mirakl/salesforce-b2c-helper/<action>@vN) in one PR and check the action in a real run. Use for "release the helper", "cut v8", "tag a new helper version", "publish the fix so the connector gets it", "bump the helper actions in the connector".
 argument-hint: "[commit SHA on master; default origin/master]"
-allowed-tools: "Bash(git*) Bash(gh*) Bash(grep*) Bash(mvn*) Bash(PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 mvn*) Read Grep Glob Edit AskUserQuestion"
 ---
 
 # Release the helper and move its consumers

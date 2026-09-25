@@ -2,7 +2,6 @@
 name: bm-automation-fix
 description: Repair a salesforce-b2c-helper Business Manager automation after a Salesforce B2C Commerce release changed the BM or login markup — pin down the locator that stopped matching, capture the new markup, write an offline *PageTest that fails on it, fix the page object under playwright_tools/src/main/java/com/mirakl/sfcc/, and build with Maven. Use for "set-feature-switches is green but the feature switch is off", "configure-sandbox-permissions times out", "the helper's BM login or MFA broke", "a locator no longer matches after the BM release", "fix the helper's Playwright automation".
 argument-hint: "<action or page object> [failing run URL or log excerpt]"
-allowed-tools: "Bash(mvn*) Bash(PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 mvn*) Bash(git*) Bash(gh*) Bash(grep*) Bash(playwright-cli*) Bash(base64*) Read Grep Glob Edit Write AskUserQuestion"
 ---
 
 # Repair a Business Manager automation
