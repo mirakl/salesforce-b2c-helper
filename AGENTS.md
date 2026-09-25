@@ -219,6 +219,16 @@ adds `-e -X`. Inputs: `SFCC_AUTOMATED_TESTS_USERNAME`, `SFCC_AUTOMATED_TESTS_PAS
 - **The OCAPI Data JSON grants a second, hard-coded client id** besides `ADMIN_OCAPI_KEY`. It came
   with the action in #8 and its user is not documented here: do not remove it as a cleanup.
 
+## Code comments
+
+- Match the surrounding density; a comment states why a wait, a retry or a selector exists — the
+  Business Manager behaviour it absorbs — never what the next Playwright call does.
+- No commented-out code; nothing in a comment that must not be public (hosts beyond examples,
+  client ids, credentials): [this repository is public](#public-repository).
+- Existing comments stay unless the code they describe is gone.
+- Stack rule: `docs/CODING-CONVENTIONS.md` § Code comments in the meta-repo that pins this
+  repository as a submodule.
+
 ## Public repository
 
 This repository is **public**; everything committed is world-readable.
