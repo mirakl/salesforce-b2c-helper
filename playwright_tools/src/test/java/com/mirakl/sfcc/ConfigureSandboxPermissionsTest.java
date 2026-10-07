@@ -11,11 +11,12 @@ import java.io.IOException;
 class ConfigureSandboxPermissionsTest extends PlaywrightBase {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigureSandboxPermissionsTest.class);
-    private static final String USERNAME = System.getProperty("SFCC_AUTOMATED_TESTS_USERNAME");
-    private static final String PASSWORD = System.getProperty("SFCC_AUTOMATED_TESTS_PASSWORD");
-    private static final String SECRET_KEY = System.getProperty("SFCC_AUTOMATED_TESTS_SECRET_KEY");
-    private static final String SFCC_BASE_URL = System.getProperty("SFCC_BASE_URL");
-    private static final String ADMIN_OCAPI_KEY = System.getProperty("ADMIN_OCAPI_KEY");
+    private static final String USERNAME = System.getenv("SFCC_AUTOMATED_TESTS_USERNAME");
+    private static final String PASSWORD = System.getenv("SFCC_AUTOMATED_TESTS_PASSWORD");
+    private static final String SECRET_KEY = System.getenv("SFCC_AUTOMATED_TESTS_SECRET_KEY");
+    private static final String SFCC_BASE_URL = System.getenv("SFCC_BASE_URL");
+    private static final String ADMIN_OCAPI_KEY = System.getenv("ADMIN_OCAPI_KEY");
+    private static final String SECONDARY_OCAPI_KEY = System.getenv("SECONDARY_OCAPI_KEY");
     private static final String BASE_URL = "https://" + SFCC_BASE_URL;
     private static final String BM_BASE = BASE_URL + "/on/demandware.store/Sites-Site/default%3bapp%3d__bm_admin";
 
@@ -79,7 +80,7 @@ class ConfigureSandboxPermissionsTest extends PlaywrightBase {
             "      ]\n" +
             "    },\n" +
             "    {\n" +
-            "      \"client_id\": \"be589f18-fc9e-4176-b1b7-7aff5724c363\",\n" +
+            "      \"client_id\": \"" + SECONDARY_OCAPI_KEY + "\",\n" +
             "      \"resources\": [\n" +
             "        {\"resource_id\": \"/code_versions/*\", \"methods\": [\"put\", \"patch\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
             "        {\"resource_id\": \"/jobs/*/executions\", \"methods\": [\"post\"], \"read_attributes\": \"(**)\", \"write_attributes\": \"(**)\"},\n" +
@@ -93,6 +94,10 @@ class ConfigureSandboxPermissionsTest extends PlaywrightBase {
 
     @Test
     void configureSandboxPermissions() {
+        // GitHub does not enforce a composite action's required inputs; saving without this id would revoke that client's permissions.
+        if (SECONDARY_OCAPI_KEY == null || SECONDARY_OCAPI_KEY.isBlank()) {
+            throw new IllegalStateException("SECONDARY_OCAPI_KEY is not set");
+        }
         login();
 
         var configurePage = new ConfigureSandboxPermissionsPage(page);

@@ -11,7 +11,7 @@ automation is packaged as a **GitHub composite action**:
 | Action | Flow (JUnit class) | What it changes on the sandbox |
 |--------|--------------------|--------------------------------|
 | [`set-feature-switches`](set-feature-switches/action.yml) | `FillCommerceApiSettingsTest` | Turns on the `ScapiHookExecutionEnabled` feature switch ("Enable Salesforce Commerce API Hook Execution") |
-| [`configure-sandbox-permissions`](configure-sandbox-permissions/action.yml) | `ConfigureSandboxPermissionsTest` | Rewrites the WebDAV client permissions and the OCAPI Data API settings for the `ADMIN_OCAPI_KEY` client, after a sandbox reset |
+| [`configure-sandbox-permissions`](configure-sandbox-permissions/action.yml) | `ConfigureSandboxPermissionsTest` | Rewrites the WebDAV client permissions and the OCAPI Data API settings for the `ADMIN_OCAPI_KEY` client (and, in the Data API settings, the `SECONDARY_OCAPI_KEY` client), after a sandbox reset |
 
 Consumers pin `mirakl/salesforce-b2c-helper/<action>@vN`. A merged change reaches them only after
 a new `vN` release **and** a bump of their pin (see [Releases and consumers](#releases-and-consumers)).
@@ -61,7 +61,7 @@ Local prerequisites:
   Playwright; otherwise `Playwright.create()` downloads the bundled Chromium, Firefox and WebKit,
   which are never launched. The actions set it.
 - Live flows only: a sandbox BM host, a BM user whose TOTP seed you hold, and (permissions flow)
-  the OCAPI client id to grant.
+  the two OCAPI client ids to grant.
 
 ## Repository map
 
@@ -108,17 +108,16 @@ mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="in
 ```
 
 **Live flows** — they change a real sandbox. The values are placeholders: never commit, log or
-paste real ones.
+paste real ones. The flows read their inputs from environment variables, not from `-D` properties.
 
 ```bash
 cd playwright_tools
-PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 mvn clean test -Dtest=FillCommerceApiSettingsTest \
-  -DSFCC_AUTOMATED_TESTS_USERNAME=<user> -DSFCC_AUTOMATED_TESTS_PASSWORD=<password> \
-  -DSFCC_AUTOMATED_TESTS_SECRET_KEY=<totp-seed> -DSFCC_BASE_URL=<bm-host>
-PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 mvn clean test -Dtest=ConfigureSandboxPermissionsTest \
-  -DSFCC_AUTOMATED_TESTS_USERNAME=<user> -DSFCC_AUTOMATED_TESTS_PASSWORD=<password> \
-  -DSFCC_AUTOMATED_TESTS_SECRET_KEY=<totp-seed> -DSFCC_BASE_URL=<bm-host> \
-  -DADMIN_OCAPI_KEY=<ocapi-client-id>
+export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 SFCC_BASE_URL=<bm-host> \
+  SFCC_AUTOMATED_TESTS_USERNAME=<user> SFCC_AUTOMATED_TESTS_PASSWORD=<password> \
+  SFCC_AUTOMATED_TESTS_SECRET_KEY=<totp-seed>
+mvn clean test -Dtest=FillCommerceApiSettingsTest
+ADMIN_OCAPI_KEY=<ocapi-client-id> SECONDARY_OCAPI_KEY=<second-ocapi-client-id> \
+  mvn clean test -Dtest=ConfigureSandboxPermissionsTest
 ```
 
 `SFCC_BASE_URL` is a bare host without scheme (for example
@@ -137,9 +136,11 @@ default action timeout, 240 s navigation timeout). `PlaywrightBase` owns the lif
 `AdminLoginPage`, `AdminPage`, `AdminVerifyPage` and `FeatureSwitchesPage`.
 `ConfigureSandboxPermissionsPage` is created inside its flow.
 
-**Inputs** are Maven `-D` system properties read with `System.getProperty(...)`:
-`SFCC_AUTOMATED_TESTS_USERNAME`, `SFCC_AUTOMATED_TESTS_PASSWORD`,
-`SFCC_AUTOMATED_TESTS_SECRET_KEY`, `SFCC_BASE_URL`, and `ADMIN_OCAPI_KEY` (permissions flow only).
+**Inputs** are environment variables read with `System.getenv(...)` (the surefire fork inherits
+Maven's environment): `SFCC_AUTOMATED_TESTS_USERNAME`, `SFCC_AUTOMATED_TESTS_PASSWORD`,
+`SFCC_AUTOMATED_TESTS_SECRET_KEY`, `SFCC_BASE_URL`, and `ADMIN_OCAPI_KEY` and `SECONDARY_OCAPI_KEY`
+(permissions flow only). The permissions flow fails before logging in when `SECONDARY_OCAPI_KEY`
+is blank.
 
 **Login** (`AdminLoginPage`, `AdminVerifyPage`): fill `#username`, click `#kc-login`, fill
 `#password`, click `#kc-login`, then type the TOTP code digit by digit into `#input-9` and try
@@ -162,17 +163,20 @@ request).
 2. **`ConfigureSandboxPermissionsTest`** (configure-sandbox-permissions). Explicit waits
    throughout. Writes the WebDAV JSON (`/impex`, `/cartridges`, `/static` = `read_write`), then on
    the OCAPI settings screen selects type `data` (the select auto-submits the page), writes the
-   Data API JSON (`_v` 23.2) into `textarea[name='FileContent']` and clicks
+   Data API JSON (`_v` 23.2, clients `ADMIN_OCAPI_KEY` and `SECONDARY_OCAPI_KEY`) into
+   `textarea[name='FileContent']` and clicks
    `button[name='saveSettings']`. Both documents **replace** what was there: a client missing from
    the JSON loses its permissions. No retry: a failure fails the step.
 
-**Composite actions.** Both run from `${{ github.action_path }}/../playwright_tools`:
+**Composite actions.** A first step registers every credential input (all but `SFCC_BASE_URL`)
+with `::add-mask::`. Then both run from `${{ github.action_path }}/../playwright_tools`:
 `actions/setup-java@v6` (zulu 21), then `sudo mvn exec:java ... install --force chrome` (Chrome
 only: v7 dropped `install-deps`, since the Chrome package brings its own system dependencies), then
-`mvn clean test -Dtest=<flow>` with `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`. `set-feature-switches`
-adds `-e -X`. Inputs: `SFCC_AUTOMATED_TESTS_USERNAME`, `SFCC_AUTOMATED_TESTS_PASSWORD`,
-`SFCC_AUTOMATED_TESTS_SECRET_KEY`, `SFCC_BASE_URL`, plus `ADMIN_OCAPI_KEY` for
-`configure-sandbox-permissions`.
+`mvn clean test -Dtest=<flow>` with `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1` and the inputs in the
+step's `env:`, never on the command line. `set-feature-switches` adds `-e`. Inputs:
+`SFCC_AUTOMATED_TESTS_USERNAME`, `SFCC_AUTOMATED_TESTS_PASSWORD`,
+`SFCC_AUTOMATED_TESTS_SECRET_KEY`, `SFCC_BASE_URL`, plus `ADMIN_OCAPI_KEY` and
+`SECONDARY_OCAPI_KEY` for `configure-sandbox-permissions`.
 
 ## Releases and consumers
 
@@ -214,10 +218,13 @@ adds `-e -X`. Inputs: `SFCC_AUTOMATED_TESTS_USERNAME`, `SFCC_AUTOMATED_TESTS_PAS
 - **Screenshots**: `PlaywrightBase.takeScreenshot(BasePage)` logs a base64 PNG (used by
   `FillCommerceApiSettingsTest`); `BasePage.takeScreenshot()` writes `screenshot_N.png` to the
   working directory and is not called by any flow.
-- **Secrets travel as `-D` arguments**, and `set-feature-switches` runs Maven with `-X`. Callers
-  must pass every credential from GitHub secrets so the runner masks it in the log.
-- **The OCAPI Data JSON grants a second, hard-coded client id** besides `ADMIN_OCAPI_KEY`. It came
-  with the action in #8 and its user is not documented here: do not remove it as a cleanup.
+- **Credentials travel as environment variables**, never as `-D` arguments, and Maven runs
+  without `-X`. The mask step only covers what is logged after it: a value the caller does not
+  take from a GitHub secret still shows in that step's `env:` header. Callers must pass every
+  credential and client id from GitHub secrets.
+- **The OCAPI Data JSON grants a second client, `SECONDARY_OCAPI_KEY`**, besides
+  `ADMIN_OCAPI_KEY`. It came with the action in #8 and its user is not documented here: do not
+  remove it as a cleanup. Its id is an input, never a literal in the sources.
 
 ## Code comments
 
@@ -237,7 +244,7 @@ This repository is **public**; everything committed is world-readable.
   OCAPI client ids or other secrets, and no customer, tenant or sandbox names.
 - Captured BM markup goes through the same filter: host replaced by `sandbox.example`, CSRF tokens
   and user- or instance-specific values removed, trimmed to the element the page object touches.
-- Credentials stay action inputs; the consumer passes them from its own secrets.
+- Credentials and client ids stay action inputs; the consumer passes them from its own secrets.
 
 ## Pull requests
 
