@@ -51,7 +51,8 @@ class ConfigureSandboxPermissionsTest extends PlaywrightBase {
             "      \"permissions\": [\n" +
             "        {\"path\": \"/impex\", \"operations\": [\"read_write\"]},\n" +
             "        {\"path\": \"/cartridges\", \"operations\": [\"read_write\"]},\n" +
-            "        {\"path\": \"/static\", \"operations\": [\"read_write\"]}\n" +
+            "        {\"path\": \"/static\", \"operations\": [\"read_write\"]},\n" +
+            "        {\"path\": \"/logs\", \"operations\": [\"read\"]}\n" +
             "      ]\n" +
             "    }\n" +
             "  ]\n" +
