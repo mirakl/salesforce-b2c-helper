@@ -160,9 +160,9 @@ request).
    `<td>`; fixed in #10, released as v7). Up to three attempts, a base64 PNG screenshot logged
    after each failed one, and then the method **returns normally** (see gotchas).
 2. **`ConfigureSandboxPermissionsTest`** (configure-sandbox-permissions). Explicit waits
-   throughout. Writes the WebDAV JSON (`/impex`, `/cartridges`, `/static` = `read_write`), then on
-   the OCAPI settings screen selects type `data` (the select auto-submits the page), writes the
-   Data API JSON (`_v` 23.2) into `textarea[name='FileContent']` and clicks
+   throughout. Writes the WebDAV JSON (`/impex`, `/cartridges`, `/static` = `read_write`;
+   `/logs` = `read`), then on the OCAPI settings screen selects type `data` (the select
+   auto-submits the page), writes the Data API JSON (`_v` 23.2) into `textarea[name='FileContent']` and clicks
    `button[name='saveSettings']`. Both documents **replace** what was there: a client missing from
    the JSON loses its permissions. No retry: a failure fails the step.
 
