@@ -12,10 +12,10 @@ import java.io.IOException;
 class FillCommerceApiSettingsTest extends PlaywrightBase {
 
     private static final Logger logger = LoggerFactory.getLogger(FillCommerceApiSettingsTest.class);
-    private static final String SFCC_AUTOMATED_TESTS_USERNAME = System.getProperty("SFCC_AUTOMATED_TESTS_USERNAME");
-    private static final String SFCC_AUTOMATED_TESTS_PASSWORD = System.getProperty("SFCC_AUTOMATED_TESTS_PASSWORD");
-    private static final String SFCC_AUTOMATED_TESTS_SECRET_KEY = System.getProperty("SFCC_AUTOMATED_TESTS_SECRET_KEY");
-    private static final String SFCC_BASE_URL = System.getProperty("SFCC_BASE_URL");
+    private static final String SFCC_AUTOMATED_TESTS_USERNAME = System.getenv("SFCC_AUTOMATED_TESTS_USERNAME");
+    private static final String SFCC_AUTOMATED_TESTS_PASSWORD = System.getenv("SFCC_AUTOMATED_TESTS_PASSWORD");
+    private static final String SFCC_AUTOMATED_TESTS_SECRET_KEY = System.getenv("SFCC_AUTOMATED_TESTS_SECRET_KEY");
+    private static final String SFCC_BASE_URL = System.getenv("SFCC_BASE_URL");
     public static final String BASE_URL = "https://" + SFCC_BASE_URL;
 
     public FillCommerceApiSettingsTest() throws IOException {
