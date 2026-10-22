@@ -118,4 +118,4 @@ log, and the setting visible in BM after a reload.
   (`Fix feature switch activation`); branch: a kebab-case slug (AGENTS.md § Pull requests). The
   body says what BM changed (old and new markup, in words), the locator change, the test, and how
   it was verified.
-- Consumers get nothing until a release: after the merge, use the `release` skill.
+- Consumers get nothing until a release: after the merge, use the `helper-release` skill.

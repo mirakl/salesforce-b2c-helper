@@ -70,7 +70,7 @@ salesforce-b2c-helper/
 ├── AGENTS.md / CLAUDE.md             # this guide (CLAUDE.md imports it)
 ├── README.md                         # 2-line stub
 ├── license.md                        # Mirakl SAS BSD-style license
-├── .claude/skills/                   # agent skills: bm-automation-fix, release
+├── .claude/skills/                   # agent skills: bm-automation-fix, helper-release
 ├── set-feature-switches/action.yml             # composite action -> FillCommerceApiSettingsTest
 ├── configure-sandbox-permissions/action.yml    # composite action -> ConfigureSandboxPermissionsTest
 └── playwright_tools/                 # Maven project com.mirakl.sfcc:playwright_tools:0.1-SNAPSHOT
@@ -190,8 +190,8 @@ step's `env:`, never on the command line. `set-feature-switches` adds `-e`. Inpu
   behaviour. A fix ships as the next `vN`.
 - Changes that consumers never run (this guide, `.claude/`, READMEs) need no release. Changes to
   the actions or to `playwright_tools/` (pom and sources) do.
-- Use the [`release`](.claude/skills/release/SKILL.md) skill: build gate, publish the next `vN`,
-  then bump every consumer pin in one PR.
+- Use the [`helper-release`](.claude/skills/helper-release/SKILL.md) skill: build gate, publish
+  the next `vN`, then bump every consumer pin in one PR.
 
 ## Conventions & gotchas
 
@@ -266,7 +266,7 @@ This repository is **public**; everything committed is world-readable.
 | Browser launch args, timeouts, page object wiring | [`PlaywrightBase.java`](playwright_tools/src/test/java/com/mirakl/sfcc/PlaywrightBase.java), [`BasePage.java`](playwright_tools/src/main/java/com/mirakl/sfcc/BasePage.java) |
 | Action inputs or steps | [`set-feature-switches/action.yml`](set-feature-switches/action.yml), [`configure-sandbox-permissions/action.yml`](configure-sandbox-permissions/action.yml) |
 | Dependency or Java version | [`playwright_tools/pom.xml`](playwright_tools/pom.xml), and `java-version` in both actions |
-| Publish a change to consumers | skill [`release`](.claude/skills/release/SKILL.md) |
+| Publish a change to consumers | skill [`helper-release`](.claude/skills/helper-release/SKILL.md) |
 
 ## Further reading
 
